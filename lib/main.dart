@@ -1,5 +1,5 @@
 // PACKAGES
-import 'package:ecommerce/screens/landing.dart';
+import 'package:ecommerce/screens/Login.dart';
 import 'package:ecommerce/utils/colors.dart';
 import 'package:flutter/material.dart';
 // SCREENS
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         primaryColor: AppColors.primaryColor,
         scaffoldBackgroundColor: AppColors.secondaryColor,
       ),
-      home: Landing(),
+      home: Login(),
     );
   }
 }

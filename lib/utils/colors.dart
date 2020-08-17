@@ -4,6 +4,7 @@ class AppColors {
   static final Color primaryColor = Color(0XFFffffff);
   static final Color secondaryColor = Color(0XFF483F8E);
   static final Color textInputBgColor = Color(0XFFF2F2F2);
+  static final Color textInputColor = Color(0XFF707070);
   static final Color borderColor = Color(0XFF716D88);
   static final Color facebookColor = Color(0XFF9BABCC);
   static final Color facebookButtonColor = Color(0XFF385798);
