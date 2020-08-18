@@ -1,7 +1,9 @@
 // PACKAGES
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/screens/Login.dart';
 import 'package:ecommerce/screens/home.dart';
 import 'package:ecommerce/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,6 +13,10 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  final handleEmailInputChange = TextEditingController();
+  final handlePasswordInputChange = TextEditingController();
+  final handleConfirmPasswordInputChange = TextEditingController();
+
   Widget _buildGoogleSignin() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,6 +223,7 @@ class _RegisterState extends State<Register> {
           ),
           height: 45.0,
           child: TextField(
+            controller: handleEmailInputChange,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: AppColors.textInputColor,
@@ -260,6 +267,7 @@ class _RegisterState extends State<Register> {
           ),
           height: 45.0,
           child: TextField(
+            controller: handlePasswordInputChange,
             keyboardType: TextInputType.visiblePassword,
             style: TextStyle(
               color: AppColors.textInputColor,
@@ -303,6 +311,7 @@ class _RegisterState extends State<Register> {
           ),
           height: 45.0,
           child: TextField(
+            controller: handleConfirmPasswordInputChange,
             keyboardType: TextInputType.visiblePassword,
             style: TextStyle(
               color: AppColors.textInputColor,
@@ -385,12 +394,36 @@ class _RegisterState extends State<Register> {
                         height: 15.0,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => Home(),
-                            ),
-                          );
+                        onTap: () async {
+                          try {
+                            FirebaseUser user = (await FirebaseAuth.instance
+                                    .createUserWithEmailAndPassword(
+                              email: handleEmailInputChange.text,
+                              password: handlePasswordInputChange.text,
+                            ))
+                                .user;
+                            if (user != null) {
+                              UserUpdateInfo updateUser = UserUpdateInfo();
+                              updateUser.displayName = "John Doe";
+                              user.updateProfile(updateUser).then((onValue) {
+                                Firestore.instance
+                                    .collection('users')
+                                    .document()
+                                    .setData({
+                                  'email': handleEmailInputChange.text,
+                                  'displayName': "John Doe"
+                                }).then((value) => Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (_) => Home(),
+                                          ),
+                                        ));
+                              });
+                            }
+                          } catch (e) {
+                            print(e);
+                            handleEmailInputChange.text = "";
+                            handlePasswordInputChange.text = "";
+                          }
                         },
                         child: Container(
                           decoration: BoxDecoration(

@@ -2,6 +2,7 @@
 import 'package:ecommerce/screens/home.dart';
 import 'package:ecommerce/screens/register.dart';
 import 'package:ecommerce/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,6 +12,9 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final handleEmailInputChange = TextEditingController();
+  final handlePasswordInputChange = TextEditingController();
+
   Widget _buildGoogleSignin() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,6 +221,7 @@ class _LoginState extends State<Login> {
           ),
           height: 45.0,
           child: TextField(
+            controller: handleEmailInputChange,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: AppColors.textInputColor,
@@ -260,6 +265,8 @@ class _LoginState extends State<Login> {
           ),
           height: 45.0,
           child: TextField(
+            obscureText: true,
+            controller: handlePasswordInputChange,
             keyboardType: TextInputType.visiblePassword,
             style: TextStyle(
               color: AppColors.textInputColor,
@@ -346,12 +353,26 @@ class _LoginState extends State<Login> {
                         height: 15.0,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => Home(),
-                            ),
-                          );
+                        onTap: () async {
+                          try {
+                            FirebaseUser user = (await FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
+                              email: handleEmailInputChange.text,
+                              password: handlePasswordInputChange.text,
+                            ))
+                                .user;
+                            if (user != null) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => Home(),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            print(e);
+                            handleEmailInputChange.text = "";
+                            handlePasswordInputChange.text = "";
+                          }
                         },
                         child: Container(
                           decoration: BoxDecoration(
